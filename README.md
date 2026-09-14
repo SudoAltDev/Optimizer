@@ -138,8 +138,8 @@ The desktop launcher is built with **automatic Administrator self-elevation**:
 ### 🛠️ Developer Setup (Manual CLI)
 ```bash
 # 1. Clone repository
-git clone https://github.com/SudoAltDev/AltOptimizer.git
-cd AltOptimizer
+git clone https://github.com/SudoAltDev/Optimizer.git
+cd Optimizer
 
 # 2. Install dependencies
 npm install
