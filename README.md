@@ -24,6 +24,15 @@ The sole author, creator, and owner of this project is **@icodx**.
 
 ---
 
+### 🚀 How to Launch in 1 Click
+> **To start AltOptimizer right away, simply double-click:**
+>
+> # 👉 `launch-desktop.bat` *(or `launch.bat`)* 👈
+>
+> 🛡️ **Automatic Administrator Elevation**: You do **not** need to right-click or manually select *"Run as administrator"*. Just double-click the file — Windows will automatically prompt you with the standard UAC elevation dialog. Click **Yes**, and AltOptimizer launches instantly with full native NT kernel optimization privileges!
+
+---
+
 </div>
 
 ## 🌟 Overview
@@ -112,15 +121,21 @@ Unlike commercial PC cleaners that install background bloatware or nag you with 
 ---
 
 ## ⚡ How to Run
+ 
+### 🚀 1-Click Launch (Recommended for Everyone)
+The desktop launcher is built with **automatic Administrator self-elevation**:
+ 
+1. **Double-click [`launch-desktop.bat`](launch-desktop.bat)** (or [`launch.bat`](launch.bat)).
+2. Windows will automatically display the UAC prompt:  
+   *“Do you want to allow this app to make changes to your device?”*
+3. Click **Yes**.
+4. The standalone AltOptimizer desktop application will immediately open with the green **`[ Administrator Active ]`** shield enabled, ready for deep Standby RAM purging, GPU shader cleaning, and High-Priority Game Boosting!
+ 
+> [!TIP]
+> **No manual right-click required!**  
+> You do **not** need to right-click and choose *"Run as administrator"*. The batch launcher automatically detects your privilege level and requests elevation on double-click.
 
-### Automatic Run (Direct Desktop App)
-The launcher is pre-configured to **automatically self-elevate to Administrator** via Windows UAC:
-
-1. Double-click [`launch.bat`](launch.bat) or [`launch-desktop.bat`](launch-desktop.bat).
-2. Accept the Windows UAC elevation prompt.
-3. The standalone frameless desktop app window opens automatically with full NT kernel privileges enabled!
-
-### Manual Developer Run
+### 🛠️ Developer Setup (Manual CLI)
 ```bash
 # 1. Clone repository
 git clone https://github.com/your-username/AltOptimizer.git

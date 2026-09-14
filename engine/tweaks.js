@@ -5,10 +5,17 @@ const execAsync = promisify(exec);
 
 export async function checkAdminStatus() {
   try {
-    const { stdout } = await execAsync('powershell -NoProfile -Command "([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"');
-    return stdout.trim().toLowerCase() === 'true';
+    // Fast, instant native Windows Administrator check (<5ms)
+    await execAsync('net session');
+    return true;
   } catch (e) {
-    return false;
+    try {
+      // Fallback via Windows Principal check
+      const { stdout } = await execAsync('powershell -NoProfile -Command "([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"');
+      return stdout.trim().toLowerCase() === 'true';
+    } catch {
+      return false;
+    }
   }
 }
 

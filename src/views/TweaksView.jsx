@@ -17,6 +17,7 @@ export default function TweaksView({ status, onRefresh, showToast }) {
   const [tweaks, setTweaks] = useState(null);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
+  const [latencyLevel, setLatencyLevel] = useState('High');
 
   const fetchTweaks = async () => {
     setLoading(true);
@@ -229,9 +230,21 @@ export default function TweaksView({ status, onRefresh, showToast }) {
                 </div>
               </div>
 
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border bg-amber-950/80 border-amber-500/40 text-amber-300">
-                Low Latency
-              </span>
+              <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-700/80 flex-shrink-0">
+                {['Low', 'Mid', 'High'].map((lvl) => (
+                  <button
+                    key={lvl}
+                    onClick={() => setLatencyLevel(lvl)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                      latencyLevel === lvl
+                        ? 'bg-amber-500 text-slate-950 shadow-sm'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {lvl}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">

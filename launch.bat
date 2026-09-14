@@ -1,18 +1,28 @@
 @echo off
-title AltOptimizer Desktop Launcher (Admin)
+setlocal EnableDelayedExpansion
+title AltOptimizer Desktop Launcher
 
-:: Check for Administrator privileges; if not elevated, request UAC elevation automatically
+:: 1. Check for Administrator privileges; if not elevated, automatically prompt Windows UAC elevation
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [AltOptimizer] Requesting Administrator privileges for deep NT memory management...
-    powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/c \"\"%~f0\"\"' -Verb RunAs"
+    echo ========================================================
+    echo   [AltOptimizer] Requesting Administrator Privileges...
+    echo ========================================================
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c call """"%~f0""""' -WorkingDirectory '%~dp0.' -Verb RunAs"
     exit /b
 )
 
+:: 2. Already running as Administrator - launch directly
 cd /d "%~dp0"
-echo ===================================================
+echo ========================================================
 echo   AltOptimizer Desktop - Administrator Mode
-echo ===================================================
+echo ========================================================
 echo [AltOptimizer] Starting AltOptimizer Standalone Desktop App...
-call npx electron .
+
+if exist "node_modules\.bin\electron.cmd" (
+    call node_modules\.bin\electron.cmd .
+) else (
+    call npx electron .
+)
 exit
+

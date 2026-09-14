@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   close: () => ipcRenderer.send('window-close'),
   elevate: () => ipcRenderer.send('elevate-admin'),
   openExternal: (url) => ipcRenderer.send('open-external', url),
-  selectFile: () => ipcRenderer.invoke('select-file')
+  selectFile: () => ipcRenderer.invoke('select-file'),
+  isAdmin: () => ipcRenderer.sendSync('is-admin-sync')
 });

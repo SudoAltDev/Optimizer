@@ -53,36 +53,34 @@ export default function DashboardView({
   const handleMasterBoost = async () => {
     if (boosting) return;
     setBoosting(true);
-    setBoostStep('Purging Standby RAM list & trimming working sets...');
+    setBoostStep('Purging Standby RAM & trimming working sets...');
 
     try {
-      setTimeout(() => setBoostStep('Sweeping Windows temp, caches & shader buffers...'), 600);
-      setTimeout(() => setBoostStep('Optimizing network latency & DNS resolver...'), 1200);
+      setTimeout(() => setBoostStep('Sweeping Windows temp, caches & shaders...'), 400);
+      setTimeout(() => setBoostStep('Optimizing network latency & DNS resolver...'), 900);
 
       const res = await api.masterBoost();
 
-      setTimeout(() => {
-        setBoosting(false);
-        setBoostStep('');
-        const freedMB = res.totalFreedMB || '0';
-        showToast({
-          type: 'success',
-          title: 'AltOptimizer Boost Complete!',
-          message: `Reclaimed ${freedMB} MB of memory and disk cache across all system subsystems.`
-        });
-        setRecentLogs(prev => [
-          { id: Date.now(), text: `Master Turbo Boost reclaimed ${freedMB} MB RAM & storage`, time: 'Just now' },
-          ...prev.slice(0, 4)
-        ]);
-        onRefresh();
-      }, 1800);
+      setBoosting(false);
+      setBoostStep('');
+      const freedMB = res.totalFreedMB || '0';
+      showToast({
+        type: 'success',
+        title: 'AltOptimizer Turbo Boost Complete!',
+        message: `Reclaimed ${freedMB} MB memory & cache across all system subsystems.`
+      });
+      setRecentLogs(prev => [
+        { id: Date.now(), text: `Master Turbo Boost reclaimed ${freedMB} MB RAM & storage`, time: 'Just now' },
+        ...prev.slice(0, 4)
+      ]);
+      onRefresh();
     } catch (err) {
       setBoosting(false);
       setBoostStep('');
       showToast({
         type: 'error',
         title: 'Boost Failed',
-        message: err.message
+        message: err.message || 'Failed to complete master boost'
       });
     }
   };
@@ -159,40 +157,49 @@ export default function DashboardView({
           </div>
 
           {/* Master Boost Button */}
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center justify-center flex-shrink-0">
             <button
               onClick={handleMasterBoost}
               disabled={boosting}
-              className={`relative group w-40 h-40 rounded-full p-2 flex flex-col items-center justify-center transition-all duration-300 select-none ${
+              className={`relative group w-36 h-36 rounded-full p-2 flex flex-col items-center justify-center transition-all duration-300 select-none ${
                 boosting
-                  ? 'cursor-wait scale-95 opacity-90'
+                  ? 'cursor-wait opacity-95'
                   : 'hover:scale-105 active:scale-95 cursor-pointer'
               }`}
             >
-              {/* Outer Glow Ring */}
-              <div className="absolute inset-0 rounded-full border-2 border-[var(--border-hover)] energy-pulse" />
+              {/* Animated Outer Glow Ring */}
+              <div className={`absolute inset-0 rounded-full border-2 border-[var(--border-hover)] transition-all ${
+                boosting ? 'animate-spin border-dashed border-[var(--accent-primary)] scale-105' : 'group-hover:scale-105'
+              }`} />
               
               {/* Inner Core */}
-              <div className="w-full h-full rounded-full cyber-btn-primary flex flex-col items-center justify-center p-4 text-center">
+              <div className="w-full h-full rounded-full cyber-btn-primary flex flex-col items-center justify-center p-3 text-center shadow-lg">
                 {boosting ? (
-                  <RefreshCw className="w-9 h-9 animate-spin mb-1 stroke-[2.5]" />
+                  <RefreshCw className="w-8 h-8 animate-spin mb-1 stroke-[2.5]" />
                 ) : (
-                  <Zap className="w-10 h-10 mb-1 group-hover:scale-110 transition-transform stroke-[2.5]" />
+                  <Zap className="w-9 h-9 mb-1 group-hover:scale-110 transition-transform stroke-[2.5]" />
                 )}
                 <span className="font-extrabold text-sm tracking-wide uppercase">
-                  {boosting ? 'Optimizing' : 'Turbo Boost'}
+                  {boosting ? 'Boosting' : 'Turbo Boost'}
                 </span>
                 <span className="text-[10px] font-mono tracking-tight opacity-90 uppercase">
-                  {boosting ? 'Flushing Cache' : '1-Click Clean'}
+                  {boosting ? 'In Progress' : '1-Click Clean'}
                 </span>
               </div>
             </button>
 
-            {boosting && (
-              <span className="text-xs font-mono text-[var(--accent-primary)] mt-2 animate-pulse text-center max-w-xs">
-                {boostStep}
-              </span>
-            )}
+            {/* Stable fixed-height status bar: prevents layout shifts */}
+            <div className="h-6 mt-2 flex items-center justify-center">
+              {boosting ? (
+                <span className="text-xs font-mono text-[var(--accent-primary)] animate-pulse text-center max-w-[220px] truncate">
+                  {boostStep}
+                </span>
+              ) : (
+                <span className="text-[11px] font-mono text-[var(--text-dim)] uppercase tracking-wider">
+                  Ready to accelerate
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -307,10 +314,10 @@ export default function DashboardView({
           icon={Cpu}
           title="Standby RAM Purger"
           value={`${ramAvailGB} GB Clean`}
-          subtitle="Flush inactive standby file lists"
-          badge="NT Native"
+          subtitle="Standby Memory Cache"
+          badge="NT Purge"
           badgeType="purple"
-          actionLabel="Purge Standby Now"
+          actionLabel="Purge Now"
           onAction={handleQuickRamPurge}
         />
 
@@ -318,21 +325,21 @@ export default function DashboardView({
           icon={Trash2}
           title="Deep Junk Cleaner"
           value="12 Repositories"
-          subtitle="Temp, Prefetch, Thumbnails, Shader"
-          badge="Safe Scan"
+          subtitle="Temp, Prefetch & Shaders"
+          badge="12 Repos"
           badgeType="cyan"
-          actionLabel="View Junk Files"
+          actionLabel="Clean Junk"
           onAction={() => setActiveTab('cleaner')}
         />
 
         <StatCard
           icon={Gamepad2}
-          title="EXE Runner & Booster"
+          title="EXE Game Booster"
           value="Game Presets"
-          subtitle="Custom Profiles & Priority Tuning"
-          badge="Ready"
+          subtitle="Priority Scheduling"
+          badge="EXE Boost"
           badgeType="emerald"
-          actionLabel="Open EXE Runner"
+          actionLabel="Open Booster"
           onAction={() => setActiveTab('game')}
         />
       </div>

@@ -85,7 +85,10 @@ export default function App() {
     }
   };
 
-  const isAdmin = status?.admin?.isAdmin || false;
+  const isElectronAdmin = (typeof window !== 'undefined' && window.electronAPI?.isAdmin)
+    ? Boolean(window.electronAPI.isAdmin())
+    : false;
+  const isAdmin = isElectronAdmin || Boolean(status?.admin?.isAdmin);
   const healthScore = status?.healthScore || 90;
 
   return (
