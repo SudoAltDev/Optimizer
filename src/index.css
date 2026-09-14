@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root, [data-theme='obsidian'] {
+    --bg-main: #080a0f;
+    --bg-sidebar: #0c0e16;
+    --bg-topbar: #080a0f;
+    --bg-card: rgba(16, 20, 31, 0.75);
+    --bg-card-hover: rgba(22, 28, 44, 0.88);
+    --border-color: rgba(56, 189, 248, 0.16);
+    --border-hover: rgba(56, 189, 248, 0.4);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --accent-primary: #38bdf8;
+    --accent-secondary: #6366f1;
+    --accent-glow: rgba(56, 189, 248, 0.35);
+    --btn-primary-text: #020617;
+  }
+
+  [data-theme='cobalt'] {
+    --bg-main: #060b17;
+    --bg-sidebar: #091122;
+    --bg-topbar: #060b17;
+    --bg-card: rgba(13, 23, 44, 0.75);
+    --bg-card-hover: rgba(18, 32, 60, 0.88);
+    --border-color: rgba(99, 102, 241, 0.22);
+    --border-hover: rgba(99, 102, 241, 0.5);
+    --text-main: #f8fafc;
+    --text-muted: #a5b4fc;
+    --text-dim: #6366f1;
+    --accent-primary: #6366f1;
+    --accent-secondary: #3b82f6;
+    --accent-glow: rgba(99, 102, 241, 0.35);
+    --btn-primary-text: #ffffff;
+  }
+
+  [data-theme='titanium'] {
+    --bg-main: #0e0f12;
+    --bg-sidebar: #13151a;
+    --bg-topbar: #0e0f12;
+    --bg-card: rgba(24, 27, 34, 0.75);
+    --bg-card-hover: rgba(32, 36, 46, 0.88);
+    --border-color: rgba(20, 184, 166, 0.2);
+    --border-hover: rgba(20, 184, 166, 0.45);
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --accent-primary: #14b8a6;
+    --accent-secondary: #06b6d4;
+    --accent-glow: rgba(20, 184, 166, 0.35);
+    --btn-primary-text: #042f2e;
+  }
+
+  [data-theme='nordic'] {
+    --bg-main: #f8fafc;
+    --bg-sidebar: #f1f5f9;
+    --bg-topbar: #f8fafc;
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-hover: rgba(255, 255, 255, 1);
+    --border-color: rgba(203, 213, 225, 0.7);
+    --border-hover: rgba(2, 132, 199, 0.4);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --text-dim: #64748b;
+    --accent-primary: #0284c7;
+    --accent-secondary: #2563eb;
+    --accent-glow: rgba(2, 132, 199, 0.25);
+    --btn-primary-text: #ffffff;
+  }
+
+  [data-theme='crimson'] {
+    --bg-main: #0c090c;
+    --bg-sidebar: #120e14;
+    --bg-topbar: #0c090c;
+    --bg-card: rgba(26, 17, 24, 0.75);
+    --bg-card-hover: rgba(38, 24, 34, 0.88);
+    --border-color: rgba(244, 63, 94, 0.2);
+    --border-hover: rgba(244, 63, 94, 0.45);
+    --text-main: #fdf2f8;
+    --text-muted: #fda4af;
+    --text-dim: #f43f5e;
+    --accent-primary: #f43f5e;
+    --accent-secondary: #e11d48;
+    --accent-glow: rgba(244, 63, 94, 0.35);
+    --btn-primary-text: #ffffff;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+}
+
+/* Glassmorphism Panel with Theme Variables */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  transition: all 0.2s ease;
+}
+
+.glass-panel-hover:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  box-shadow: 0 4px 20px -5px var(--accent-glow);
+}
+
+.cyber-btn-primary {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  color: var(--btn-primary-text);
+  font-weight: 700;
+  box-shadow: 0 2px 14px -3px var(--accent-glow);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cyber-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px 0px var(--accent-glow);
+  filter: brightness(1.05);
+}
+
+.cyber-btn-secondary {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  transition: all 0.2s ease;
+}
+
+.cyber-btn-secondary:hover:not(:disabled) {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+}
+
+/* Custom Clean Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+.app-drag-region {
+  -webkit-app-region: drag;
+}
+
+.app-no-drag {
+  -webkit-app-region: no-drag;
+}

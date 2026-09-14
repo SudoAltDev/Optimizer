@@ -1,0 +1,14 @@
+C:\Users\maury\Downloads\optimizer\engine\native\bin\Release\net9.0\win-x64\MemoryEngine.exe
+C:\Users\maury\Downloads\optimizer\engine\native\bin\Release\net9.0\win-x64\MemoryEngine.deps.json
+C:\Users\maury\Downloads\optimizer\engine\native\bin\Release\net9.0\win-x64\MemoryEngine.runtimeconfig.json
+C:\Users\maury\Downloads\optimizer\engine\native\bin\Release\net9.0\win-x64\MemoryEngine.dll
+C:\Users\maury\Downloads\optimizer\engine\native\bin\Release\net9.0\win-x64\MemoryEngine.pdb
+C:\Users\maury\Downloads\optimizer\engine\native\obj\Release\net9.0\win-x64\MemoryEngine.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\maury\Downloads\optimizer\engine\native\obj\Release\net9.0\win-x64\MemoryEngine.AssemblyInfoInputs.cache
+C:\Users\maury\Downloads\optimizer\engine\native\obj\Release\net9.0\win-x64\MemoryEngine.AssemblyInfo.cs
+C:\Users\maury\Downloads\optimizer\engine\native\obj\Release\net9.0\win-x64\MemoryEngine.csproj.CoreCompileInputs.cache
+C:\Users\maury\Downloads\optimizer\engine\native\obj\Release\net9.0\win-x64\MemoryEngine.dll
+C:\Users\maury\Downloads\optimizer\engine\native\obj\Release\net9.0\win-x64\refint\MemoryEngine.dll
+C:\Users\maury\Downloads\optimizer\engine\native\obj\Release\net9.0\win-x64\MemoryEngine.pdb
+C:\Users\maury\Downloads\optimizer\engine\native\obj\Release\net9.0\win-x64\MemoryEngine.genruntimeconfig.cache
+C:\Users\maury\Downloads\optimizer\engine\native\obj\Release\net9.0\win-x64\ref\MemoryEngine.dll
