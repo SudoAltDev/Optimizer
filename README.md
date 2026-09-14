@@ -138,8 +138,8 @@ The desktop launcher is built with **automatic Administrator self-elevation**:
 ### 🛠️ Developer Setup (Manual CLI)
 ```bash
 # 1. Clone repository
-git clone https://github.com/your-username/AltOptimizer.git
-cd AltOptimizer
+git clone https://github.com/SudoAltDev/Optimizer.git
+cd Optimizer
 
 # 2. Install dependencies
 npm install
@@ -151,7 +151,7 @@ npm run build:native
 npm run build
 
 # 5. Launch the standalone desktop app
-npm run app
+Double-click launch-desktop.bat (or launch.bat).
 ```
 
 ---
