@@ -151,7 +151,7 @@ npm run build:native
 npm run build
 
 # 5. Launch the standalone desktop app
-npm run app
+now in the files check for launch-desktop.bat and run that as administrator
 ```
 
 ---
