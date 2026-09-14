@@ -20,9 +20,20 @@ import { api } from '../services/api';
 export default function RamView({ status, telemetry, onRefresh, showToast }) {
   const [optimizing, setOptimizing] = useState(false);
   const [lastOptimizedResult, setLastOptimizedResult] = useState(null);
+  const [showPurgeBanner, setShowPurgeBanner] = useState(false);
+  const [isDismissingBanner, setIsDismissingBanner] = useState(false);
   const [processes, setProcesses] = useState([]);
   const [loadingProcesses, setLoadingProcesses] = useState(false);
   const [actionPid, setActionPid] = useState(null);
+
+  const dismissBanner = () => {
+    if (isDismissingBanner) return;
+    setIsDismissingBanner(true);
+    setTimeout(() => {
+      setShowPurgeBanner(false);
+      setIsDismissingBanner(false);
+    }, 280);
+  };
 
   const ramStats = telemetry?.ram || status?.ram || {};
   const totalGB = parseFloat(ramStats.totalGB) || 16.0;
@@ -48,9 +59,12 @@ export default function RamView({ status, telemetry, onRefresh, showToast }) {
 
   const handleOptimize = async (mode = '--all') => {
     setOptimizing(true);
+    setShowPurgeBanner(false);
     try {
       const res = await api.optimizeRam(mode);
       setLastOptimizedResult(res);
+      setShowPurgeBanner(true);
+      setIsDismissingBanner(false);
 
       const mb = res.freedBytes ? (res.freedBytes / (1024 * 1024)).toFixed(1) : '0';
       showToast({
@@ -138,6 +152,39 @@ export default function RamView({ status, telemetry, onRefresh, showToast }) {
           </button>
         </div>
       </div>
+
+      {/* Liquid Glass Memory Clearance Banner */}
+      {showPurgeBanner && lastOptimizedResult && (
+        <div 
+          className={`p-4 rounded-2xl border border-purple-500/40 bg-gradient-to-r from-purple-950/60 via-slate-900/80 to-indigo-950/40 backdrop-blur-2xl shadow-[0_12px_36px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] flex items-center justify-between gap-4 transition-all select-none ${
+            isDismissingBanner ? 'animate-liquid-disappear' : 'animate-liquid-appear'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-400 shadow-sm flex-shrink-0">
+              <Zap className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-white flex items-center gap-2">
+                <span>Standby Memory Purged</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                  Freed {lastOptimizedResult.freedBytes ? (lastOptimizedResult.freedBytes / (1024 * 1024)).toFixed(1) : '0'} MB
+                </span>
+              </div>
+              <div className="text-xs text-slate-300 mt-0.5 font-mono">
+                Trimmed {lastOptimizedResult.workingSetsTrimmed || 0} process working sets and cleared unreferenced cache pages.
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={dismissBanner}
+            title="Dismiss notification"
+            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer flex-shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Real-Time Memory Gauge & Multi-Segment Visualizer */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

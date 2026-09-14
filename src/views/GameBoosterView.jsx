@@ -40,6 +40,7 @@ export default function GameBoosterView({ showToast }) {
 
   // Modal / Form state for adding custom preset
   const [showAddModal, setShowAddModal] = useState(false);
+  const [isClosingModal, setIsClosingModal] = useState(false);
   const [presetName, setPresetName] = useState('');
   const [presetPath, setPresetPath] = useState('');
   const [presetArgs, setPresetArgs] = useState('');
@@ -49,6 +50,18 @@ export default function GameBoosterView({ showToast }) {
   const [presetUltimatePower, setPresetUltimatePower] = useState(true);
 
   const [launchingId, setLaunchingId] = useState(null);
+
+  const handleCloseModal = () => {
+    if (isClosingModal) return;
+    setIsClosingModal(true);
+    setTimeout(() => {
+      setShowAddModal(false);
+      setIsClosingModal(false);
+      setPresetName('');
+      setPresetPath('');
+      setPresetArgs('');
+    }, 220);
+  };
 
   // Save presets to localStorage whenever updated
   useEffect(() => {
@@ -118,10 +131,7 @@ export default function GameBoosterView({ showToast }) {
     };
 
     setPresets(prev => [newPreset, ...prev]);
-    setShowAddModal(false);
-    setPresetName('');
-    setPresetPath('');
-    setPresetArgs('');
+    handleCloseModal();
 
     showToast({
       type: 'success',
@@ -285,30 +295,32 @@ export default function GameBoosterView({ showToast }) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 w-full md:w-auto">
+        <div className="flex items-center gap-2 w-full md:w-auto">
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl cyber-btn-primary text-xs font-bold select-none cursor-pointer"
+            title="Add a custom game or application executable preset"
+            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl cyber-btn-primary text-xs font-semibold select-none cursor-pointer transition-all shadow-sm active:scale-95"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Add Custom Preset</span>
+            <span>Add</span>
           </button>
 
           {presets.length > 0 && (
             <button
               onClick={handleExportConfig}
               title="Export saved presets to JSON"
-              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl cyber-btn-secondary text-xs font-medium cursor-pointer"
+              className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl cyber-btn-secondary text-xs font-medium cursor-pointer transition-all active:scale-95"
             >
               <Download className="w-3.5 h-3.5 text-slate-400" />
-              <span>Export Config</span>
+              <span>Export</span>
             </button>
           )}
 
           <button
             onClick={fetchProcesses}
             disabled={loading}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl cyber-btn-secondary text-xs font-medium cursor-pointer"
+            title="Refresh running processes radar"
+            className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl cyber-btn-secondary text-xs font-medium cursor-pointer transition-all active:scale-95"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Radar</span>
@@ -316,10 +328,19 @@ export default function GameBoosterView({ showToast }) {
         </div>
       </div>
 
-      {/* Add Custom Preset Modal */}
+      {/* Add Custom Preset Modal with Liquid Enter & Exit Animations */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md glass-panel p-6 space-y-4 border-sky-500/40 shadow-2xl animate-scale-up bg-[#0e131f]">
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 select-none ${
+            isClosingModal ? 'animate-backdrop-exit' : 'animate-backdrop-enter'
+          }`}
+          onClick={(e) => { if (e.target === e.currentTarget) handleCloseModal(); }}
+        >
+          <div 
+            className={`w-full max-w-md glass-panel p-6 space-y-4 border-sky-500/40 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_1px_1.5px_rgba(255,255,255,0.25)] bg-[#0c111d]/90 backdrop-blur-2xl ${
+              isClosingModal ? 'animate-modal-exit' : 'animate-modal-enter'
+            }`}
+          >
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <Sliders className="w-4 h-4 text-sky-400" />
@@ -328,8 +349,9 @@ export default function GameBoosterView({ showToast }) {
                 </h3>
               </div>
               <button
-                onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-white text-xs"
+                type="button"
+                onClick={handleCloseModal}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-xs"
               >
                 ✕
               </button>
@@ -435,8 +457,8 @@ export default function GameBoosterView({ showToast }) {
               <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium cursor-pointer"
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
@@ -533,7 +555,7 @@ export default function GameBoosterView({ showToast }) {
               No Application Profiles Configured Yet
             </div>
             <p className="text-xs text-slate-400 max-w-md mx-auto">
-              Click <strong>"Add Custom Preset"</strong> above to browse any `.exe` on your PC, or click <strong>"+ Preset"</strong> next to any running application in the radar below.
+              Click <strong>"Add"</strong> above to browse any `.exe` on your PC, or click <strong>"+ Preset"</strong> next to any running application in the radar below.
             </p>
           </div>
         )}

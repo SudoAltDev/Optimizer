@@ -88,6 +88,23 @@
     --btn-primary-text: #ffffff;
   }
 
+  [data-theme='liquid-glass'] {
+    --bg-main: #050811;
+    --bg-sidebar: rgba(8, 14, 28, 0.72);
+    --bg-topbar: rgba(5, 8, 17, 0.85);
+    --bg-card: rgba(14, 23, 42, 0.52);
+    --bg-card-hover: rgba(20, 36, 66, 0.70);
+    --border-color: rgba(56, 189, 248, 0.22);
+    --border-hover: rgba(125, 211, 252, 0.55);
+    --text-main: #f0f9ff;
+    --text-muted: #bae6fd;
+    --text-dim: #38bdf8;
+    --accent-primary: #0284c7;
+    --accent-secondary: #06b6d4;
+    --accent-glow: rgba(56, 189, 248, 0.45);
+    --btn-primary-text: #ffffff;
+  }
+
   body {
     margin: 0;
     padding: 0;
@@ -101,14 +118,15 @@
   }
 }
 
-/* Glassmorphism Panel with Theme Variables */
+/* Glassmorphism Panel with Tasteful Liquid Edge Refractions */
 .glass-panel {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--border-color);
   border-radius: 14px;
-  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.08), 0 8px 32px -6px rgba(0, 0, 0, 0.4);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-panel-hover:hover {
@@ -234,6 +252,45 @@
   color: #b45309 !important;
 }
 
+/* Liquid Glass Specific Theme Overrides */
+[data-theme='liquid-glass'] .glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(14, 165, 233, 0.03) 40%, rgba(15, 23, 42, 0.58) 100%) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35),
+    0 10px 32px -4px rgba(0, 0, 0, 0.55),
+    0 0 20px -4px rgba(56, 189, 248, 0.16) !important;
+}
+
+[data-theme='liquid-glass'] .glass-panel:hover {
+  border-color: rgba(125, 211, 252, 0.50) !important;
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.45),
+    0 14px 44px -4px rgba(0, 0, 0, 0.65),
+    0 0 28px -2px rgba(56, 189, 248, 0.30) !important;
+}
+
+[data-theme='liquid-glass'] .cyber-btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 45%, #06b6d4 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.30) !important;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+    0 4px 20px -2px rgba(14, 165, 233, 0.55) !important;
+}
+
+[data-theme='liquid-glass'] .cyber-btn-secondary {
+  background: rgba(15, 23, 42, 0.65) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: #e0f2fe !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
 /* Custom Clean Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -259,4 +316,116 @@
 
 .app-no-drag {
   -webkit-app-region: no-drag;
+}
+
+/* ============================================================
+   FLUID LIQUID APPEAR & DISAPPEAR ANIMATIONS
+   ============================================================ */
+
+@keyframes liquid-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+    filter: blur(8px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes liquid-disappear {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+  40% {
+    opacity: 0.85;
+    transform: translateY(4px) scale(0.98);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.90);
+    filter: blur(10px);
+  }
+}
+
+@keyframes modal-liquid-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+    filter: blur(8px);
+  }
+  70% {
+    transform: scale(1.01) translateY(-1px);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0px);
+  }
+}
+
+@keyframes modal-liquid-exit {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.93) translateY(14px);
+    filter: blur(8px);
+  }
+}
+
+@keyframes backdrop-fade-in {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(10px); }
+}
+
+@keyframes backdrop-fade-out {
+  from { opacity: 1; backdrop-filter: blur(10px); }
+  to { opacity: 0; backdrop-filter: blur(0px); }
+}
+
+@keyframes toast-progress {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.animate-liquid-appear {
+  animation: liquid-appear 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-liquid-disappear {
+  animation: liquid-disappear 0.30s cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+.animate-modal-enter {
+  animation: modal-liquid-enter 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-modal-exit {
+  animation: modal-liquid-exit 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+.animate-backdrop-enter {
+  animation: backdrop-fade-in 0.26s ease-out forwards;
+}
+
+.animate-backdrop-exit {
+  animation: backdrop-fade-out 0.20s ease-in forwards;
+  pointer-events: none;
 }

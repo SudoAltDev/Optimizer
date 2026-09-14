@@ -20,6 +20,17 @@ export default function CleanerView({ showToast }) {
   const [totalSize, setTotalSize] = useState(0);
   const [totalFiles, setTotalFiles] = useState(0);
   const [cleanedSummary, setCleanedSummary] = useState(null);
+  const [showClearBanner, setShowClearBanner] = useState(false);
+  const [isDismissingBanner, setIsDismissingBanner] = useState(false);
+
+  const dismissBanner = () => {
+    if (isDismissingBanner) return;
+    setIsDismissingBanner(true);
+    setTimeout(() => {
+      setShowClearBanner(false);
+      setIsDismissingBanner(false);
+    }, 280);
+  };
 
   const formatBytes = (bytes) => {
     if (!bytes || bytes === 0) return '0 B';
@@ -32,6 +43,7 @@ export default function CleanerView({ showToast }) {
   const runScan = async () => {
     setScanning(true);
     setCleanedSummary(null);
+    setShowClearBanner(false);
     try {
       const res = await api.scanCleaner();
       setCategories(res.categories || []);
@@ -92,6 +104,8 @@ export default function CleanerView({ showToast }) {
         filesDeleted: res.totalFilesDeleted || 0,
         details: res.details || []
       });
+      setShowClearBanner(true);
+      setIsDismissingBanner(false);
 
       showToast({
         type: 'success',
@@ -150,6 +164,39 @@ export default function CleanerView({ showToast }) {
           </button>
         </div>
       </div>
+
+      {/* Liquid Glass Clearance Notification Banner */}
+      {showClearBanner && cleanedSummary && (
+        <div 
+          className={`p-4 rounded-2xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-teal-950/40 backdrop-blur-2xl shadow-[0_12px_36px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] flex items-center justify-between gap-4 transition-all select-none ${
+            isDismissingBanner ? 'animate-liquid-disappear' : 'animate-liquid-appear'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 shadow-sm flex-shrink-0">
+              <CheckSquare className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-white flex items-center gap-2">
+                <span>Clean Sweep Successful</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  Reclaimed {formatBytes(cleanedSummary.freedBytes)}
+                </span>
+              </div>
+              <div className="text-xs text-slate-300 mt-0.5 font-mono">
+                Purged {cleanedSummary.filesDeleted.toLocaleString()} obsolete cache files across selected repositories.
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={dismissBanner}
+            title="Dismiss notification"
+            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer flex-shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Summary Stat Banner */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -63,6 +63,14 @@ export default function SettingsView({
       type: 'dark'
     },
     { 
+      id: 'liquid-glass', 
+      name: 'Liquid Glass (Frosted)', 
+      desc: 'Translucent crystal glass, fluid depth & specular cyan aura', 
+      bg: '#050811', 
+      accent: '#06b6d4',
+      type: 'dark'
+    },
+    { 
       id: 'nordic', 
       name: 'Nordic Clean Light', 
       desc: 'Pristine frosted white & light slate interface', 
