@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build Outputs
+dist/
+build/
+out/
+
+# .NET / C# Build Artifacts
+engine/native/bin/
+engine/native/obj/
+!bin/MemoryEngine.exe
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Keep the compiled production engine helper if desired, but ignore debug outputs
+engine/native/bin/
+engine/native/obj/
+
+# Logs & Temporary Files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment & IDE
+.env
+.env.local
+.env.*.local
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store

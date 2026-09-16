@@ -1,12 +1,19 @@
 import path from 'path';
+import fs from 'fs';
 import { execFile, exec } from 'child_process';
 import { promisify } from 'util';
 import os from 'os';
+import { fileURLToPath } from 'url';
 
 const execFileAsync = promisify(execFile);
 const execAsync = promisify(exec);
 
-const BIN_PATH = path.resolve(process.cwd(), 'bin', 'MemoryEngine.exe');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const BIN_PATH = fs.existsSync(path.resolve(__dirname, '..', 'bin', 'MemoryEngine.exe'))
+  ? path.resolve(__dirname, '..', 'bin', 'MemoryEngine.exe')
+  : path.resolve(process.cwd(), 'bin', 'MemoryEngine.exe');
 
 export async function getRamStats() {
   try {

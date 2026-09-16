@@ -2,10 +2,14 @@ import { exec, execFile, spawn } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { optimizeRam } from './ram.js';
 
 const execAsync = promisify(exec);
 const execFileAsync = promisify(execFile);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Known game launchers and popular processes
 export const KNOWN_GAMES_PATTERNS = [
@@ -16,27 +20,45 @@ export const KNOWN_GAMES_PATTERNS = [
   /forza/i, /starfield/i, /witcher/i, /eldenring/i, /bg3/i, /baldursgate/i
 ];
 
-const BIN_PATH = path.resolve(process.cwd(), 'bin', 'MemoryEngine.exe');
+const BIN_PATH = fs.existsSync(path.resolve(__dirname, '..', 'bin', 'MemoryEngine.exe'))
+  ? path.resolve(__dirname, '..', 'bin', 'MemoryEngine.exe')
+  : path.resolve(process.cwd(), 'bin', 'MemoryEngine.exe');
 
 export async function getProcessList() {
+  // 1. Try high-performance C# MemoryEngine
   try {
-    const { stdout } = await execFileAsync(BIN_PATH, ['--processes'], { maxBuffer: 10 * 1024 * 1024 });
-    if (!stdout.trim()) return [];
-
-    const raw = JSON.parse(stdout.trim());
-    const list = Array.isArray(raw) ? raw : [raw];
-
-    return list.slice(0, 80).map(p => {
-      const isGame = KNOWN_GAMES_PATTERNS.some(rx => rx.test(p.name));
-      return {
-        ...p,
-        isGame
-      };
-    });
+    if (fs.existsSync(BIN_PATH)) {
+      const { stdout } = await execFileAsync(BIN_PATH, ['--processes'], { maxBuffer: 10 * 1024 * 1024 });
+      if (stdout && stdout.trim()) {
+        const raw = JSON.parse(stdout.trim());
+        const list = Array.isArray(raw) ? raw : [raw];
+        return list.slice(0, 80).map(p => ({
+          ...p,
+          isGame: KNOWN_GAMES_PATTERNS.some(rx => rx.test(p.name))
+        }));
+      }
+    }
   } catch (err) {
-    console.error('Error fetching process list:', err);
-    return [];
+    console.warn('MemoryEngine --processes failed, falling back to PowerShell:', err.message);
   }
+
+  // 2. Resilient Fallback: PowerShell Get-Process (guarantees Process Radar never crashes)
+  try {
+    const psCmd = `powershell -NoProfile -Command "Get-Process | Where-Object { $_.Id -gt 4 } | Select-Object -First 60 Id, ProcessName, WorkingSet64 | ForEach-Object { [PSCustomObject]@{ pid = $_.Id; name = $_.ProcessName; ramMB = [math]::Round($_.WorkingSet64 / 1MB, 1); cpuSec = 0; priority = 'Normal'; threads = 1; path = '' } } | ConvertTo-Json"`;
+    const { stdout } = await execAsync(psCmd);
+    if (stdout && stdout.trim()) {
+      const raw = JSON.parse(stdout.trim());
+      const list = Array.isArray(raw) ? raw : [raw];
+      return list.map(p => ({
+        ...p,
+        isGame: KNOWN_GAMES_PATTERNS.some(rx => rx.test(p.name))
+      }));
+    }
+  } catch (fallbackErr) {
+    console.error('Fallback getProcessList failed:', fallbackErr);
+  }
+
+  return [];
 }
 
 export async function setProcessPriority(pid, priority = 'High') {

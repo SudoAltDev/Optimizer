@@ -1,75 +1,47 @@
 @echo off
-setlocal EnableDelayedExpansion
 title AltOptimizer Desktop Launcher
 
-:: 1. Check for Administrator privileges; if not elevated, automatically prompt Windows UAC elevation
+:: 1. Request Administrator privileges if not elevated (single prompt, clean exit)
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo ========================================================
     echo   [AltOptimizer] Requesting Administrator Privileges...
     echo ========================================================
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c call """"%~f0""""' -WorkingDirectory '%~dp0.' -Verb RunAs"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
     exit /b
 )
 
-:: 2. Already running as Administrator
+:: 2. Switch to project root directory
 cd /d "%~dp0"
-echo ========================================================
-echo   AltOptimizer Desktop - Administrator Mode
-echo ========================================================
 
-:: 3. Verify Node.js & npm prerequisites
-where node >nul 2>&1
-if %errorlevel% neq 0 (
+:: 3. Check if dependencies are installed; if missing, direct user to setup.bat
+if not exist "node_modules" (
     echo.
-    echo [ERROR] Node.js is NOT installed or not detected in your system PATH!
+    echo ==============================================================================
+    echo   [!] AltOptimizer dependencies not found.
     echo.
-    echo AltOptimizer requires Node.js (v20+ LTS recommended) and npm.
-    echo --------------------------------------------------------
-    echo ⚡ Easiest Solution:
-    echo    Double-click 'setup.bat' in this folder to automatically
-    echo    install Node.js, .NET 9 SDK, and all dependencies for you!
-    echo.
-    echo Manual Solutions:
-    echo 1. Open PowerShell or Windows Terminal and run:
-    echo      winget install OpenJS.NodeJS.LTS
-    echo 2. Or download the installer directly from:
-    echo      https://nodejs.org/
-    echo.
-    echo After installing, close and relaunch this script!
-    echo ========================================================
+    echo   Please double-click 'setup.bat' first to install Node.js, .NET and packages!
+    echo ==============================================================================
     echo.
     pause
     exit /b 1
 )
 
-:: 4. Check if dependencies are installed; auto-install if missing
-if not exist "node_modules" (
-    echo.
-    echo [AltOptimizer] First-time launch detected!
-    echo [AltOptimizer] Installing required packages via 'npm install'...
-    echo This may take a moment. Please wait...
-    echo.
-    call npm install
-    if %errorlevel% neq 0 (
-        echo.
-        echo [ERROR] 'npm install' encountered an error.
-        echo Please check your internet connection and try running 'npm install' manually.
-        echo.
-        pause
-        exit /b 1
-    )
-    echo.
-    echo [AltOptimizer] Dependencies installed successfully!
-    echo.
-)
+:: 4. Ensure complete system and runtime paths are accessible
+set "PATH=%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0\;C:\Program Files\nodejs\;C:\Program Files\dotnet\;%APPDATA%\npm;%PATH%"
 
-:: 5. Start AltOptimizer Desktop App
+:: 5. Launch AltOptimizer Desktop App directly (single instance with --elevated flag)
 echo [AltOptimizer] Starting AltOptimizer Standalone Desktop App...
 
-if exist "node_modules\.bin\electron.cmd" (
-    call node_modules\.bin\electron.cmd .
-) else (
-    call npx electron .
+if exist "node_modules\electron\dist\electron.exe" (
+    start "" "%~dp0node_modules\electron\dist\electron.exe" "%~dp0." --elevated
+    exit /b 0
 )
-exit
+
+if exist "node_modules\.bin\electron.cmd" (
+    start "" node_modules\.bin\electron.cmd . --elevated
+    exit /b 0
+)
+
+call npx electron . --elevated
+exit /b 0

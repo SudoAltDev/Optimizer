@@ -9,7 +9,7 @@
 [![Open Source](https://img.shields.io/badge/Project-Open%20Source%20%26%20Public-00f0ff?style=for-the-badge&logo=github)](https://github.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-a855f7?style=for-the-badge)](LICENSE)
 [![Node.js Version](https://img.shields.io/badge/Node.js-v20%2B%20LTS-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![.NET Version](https://img.shields.io/badge/.NET-9.0-512bd4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
+[![.NET Version](https://img.shields.io/badge/.NET-10.0-512bd4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
 [![Creator](https://img.shields.io/badge/Sole%20Owner-%40icodx-10b981?style=for-the-badge&logo=telegram)](https://t.me/icodx)
 [![Website](https://img.shields.io/badge/Website-altdev.netlify.app-blue?style=for-the-badge&logo=netlify)](https://altdev.netlify.app)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20x64-0078d4?style=for-the-badge&logo=windows)](https://microsoft.com/windows)
@@ -31,7 +31,7 @@ The sole author, creator, and owner of this project is **@icodx**.
 >
 > # 👉 Double-Click `setup.bat` 👈
 >
-> 🪄 **Automatic All-in-One Installer**: Automatically requests Administrator privileges, detects and installs **Node.js LTS**, installs **Microsoft .NET 9 SDK**, runs `npm install`, verifies the native C# engine, and gets everything 100% ready in one click!
+> 🪄 **Automatic All-in-One Installer**: Automatically requests Administrator privileges, detects and installs **Node.js LTS**, installs **Microsoft .NET 10 SDK**, runs `npm install`, verifies the native C# engine, and gets everything 100% ready in one click!
 
 ---
 
@@ -51,9 +51,9 @@ The sole author, creator, and owner of this project is **@icodx**.
 - [💻 System Requirements](#-system-requirements)
 - [⚡ 1-Click Automated Setup (`setup.bat`)](#-1-click-automated-setup-setupbat)
 - [⌨️ 1-Line PowerShell Command](#️-1-line-powershell-command-for-power-users)
-- [📋 Prerequisites (Node.js, npm & .NET 9)](#-prerequisites-manual-installation)
+- [📋 Prerequisites (Node.js, npm & .NET 10)](#-prerequisites-manual-installation)
   - [1. Node.js & npm](#1-nodejs--npm-runtime)
-  - [2. Microsoft .NET 9 SDK](#2-microsoft-net-9-sdk--runtime)
+  - [2. Microsoft .NET 10 SDK](#2-microsoft-net-10-sdk--runtime)
 - [🛠️ Manual Setup & Developer Guide](#️-manual-setup--developer-guide)
 - [📸 Software Previews & Screenshots](#-software-previews--screenshots)
 - [🚀 Key Modules & Architecture](#-key-modules--architecture)
@@ -77,8 +77,8 @@ Unlike commercial PC cleaners that install background bloatware or nag you with 
 | **Operating System** | Windows 10 64-bit (Build 1809+) | Windows 10 / 11 64-bit (Latest Build) |
 | **Architecture** | x64 (64-bit Intel / AMD) | x64 (64-bit Intel / AMD) |
 | **JavaScript Runtime** | Node.js v18+ (includes `npm`) | **Node.js v20+ or v22+ LTS** |
-| **.NET Runtime** | .NET 9 Desktop Runtime / SDK | **Microsoft .NET 9.0 SDK** |
-| **Pre-compiled Engine** | Pre-compiled `bin/MemoryEngine.exe` included | .NET 9 SDK *(to rebuild native code)* |
+| **.NET Runtime** | .NET 9 / 10 Desktop Runtime or SDK | **Microsoft .NET 10.0 SDK** |
+| **Pre-compiled Engine** | Pre-compiled `bin/MemoryEngine.exe` included | .NET 10 SDK *(to rebuild native code)* |
 | **User Privileges** | Administrator (Required for NT Standby Purge & Latency Tweaks) | Self-elevating via `launch-desktop.bat` |
 
 ---
@@ -92,7 +92,7 @@ The easiest way to get started on Windows without manually downloading anything:
 3. Click **Yes** on the Windows UAC Administrator prompt.
 4. Sit back! The script will dynamically inspect each component and **only install what is missing**:
    - 🔍 **Checks Node.js & npm**: If already installed, it reports `[STATUS] AVAILABLE` and skips it. If not found, it automatically downloads and installs **Node.js LTS** via `winget`.
-   - 🔍 **Checks Microsoft .NET 9 SDK**: If already installed, it reports `[STATUS] AVAILABLE` and skips it. If not found, it downloads and installs **.NET 9 SDK** via `winget`.
+   - 🔍 **Checks Microsoft .NET 10 SDK**: If already installed, it reports `[STATUS] AVAILABLE` and skips it. If not found, it downloads and installs **.NET 10 SDK** via `winget`.
    - 🔍 **Checks Dependencies (`node_modules`)**: If already present, skips reinstalling. If missing, runs `npm install` automatically.
    - 🔍 **Checks Native Memory Engine**: Verifies `bin/MemoryEngine.exe`; compiles it if missing.
    - 🚀 Asks if you want to immediately launch AltOptimizer!
@@ -101,10 +101,10 @@ The easiest way to get started on Windows without manually downloading anything:
 
 ## ⌨️ 1-Line PowerShell Command (For Power Users)
 
-If you prefer using **PowerShell (Run as Administrator)** or Windows Terminal, you can copy-paste this single one-line command to install Node.js, .NET 9 SDK, and all project packages at once:
+If you prefer using **PowerShell (Run as Administrator)** or Windows Terminal, you can copy-paste this single one-line command to install Node.js, .NET 10 SDK, and all project packages at once:
 
 ```powershell
-winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements; winget install --id Microsoft.DotNet.SDK.9 -e --accept-package-agreements --accept-source-agreements; npm install
+winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements; winget install --id Microsoft.DotNet.SDK.10 -e --accept-package-agreements --accept-source-agreements; npm install
 ```
 
 > [!TIP]
@@ -140,19 +140,19 @@ npm -v
 
 ---
 
-### 2. Microsoft .NET 9 SDK / Runtime
-The high-performance standby memory purge engine (`engine/native/MemoryEngine.csproj`) is written in C# and targets **.NET 9.0**.
+### 2. Microsoft .NET 10 SDK / Runtime
+The high-performance standby memory purge engine (`engine/native/MemoryEngine.csproj`) is written in C# and targets **.NET 9 / 10**.
 
 > [!NOTE]
-> A pre-compiled binary (`bin/MemoryEngine.exe`) is already included in this repository so you can run the app immediately. Installing the .NET 9 SDK ensures full runtime library compatibility and enables you to recompile native kernel tweaks from source.
+> A pre-compiled binary (`bin/MemoryEngine.exe`) is already included in this repository so you can run the app immediately. Installing the .NET 10 SDK ensures full runtime library compatibility and enables you to recompile native kernel tweaks from source.
 
 * **Option A (Terminal via winget)**:
   ```powershell
-  winget install Microsoft.DotNet.SDK.9
+  winget install Microsoft.DotNet.SDK.10
   ```
 * **Option B (Official GUI Installer)**:
-  1. Visit **[https://dotnet.microsoft.com/download/dotnet/9.0](https://dotnet.microsoft.com/download/dotnet/9.0)**.
-  2. Under **.NET SDK 9.x**, click **Windows x64 Installer**.
+  1. Visit **[https://dotnet.microsoft.com/download/dotnet](https://dotnet.microsoft.com/download/dotnet)**.
+  2. Download the **.NET SDK 10.x** Windows x64 Installer.
   3. Run the installer and complete the setup wizard.
 * **Option C (Chocolatey / Scoop)**:
   ```bash
@@ -164,7 +164,7 @@ The high-performance standby memory purge engine (`engine/native/MemoryEngine.cs
 ```bash
 dotnet --version
 ```
-*(Should output `9.0.xxx`)*
+*(Should output `9.0.xxx` or `10.0.xxx`)*
 
 ---
 
@@ -288,9 +288,9 @@ npm run app
 <summary><b>2. Error: <code>'dotnet' is not recognized as an internal or external command</code></b></summary>
 <br/>
 
-**Cause**: .NET 9 SDK is not installed on your system.  
+**Cause**: Microsoft .NET SDK is not installed on your system.  
 **Solution**:
-1. Double-click [`setup.bat`](setup.bat) or run `winget install Microsoft.DotNet.SDK.9` in PowerShell.
+1. Double-click [`setup.bat`](setup.bat) or run `winget install Microsoft.DotNet.SDK.10` in PowerShell.
 2. Note that `bin/MemoryEngine.exe` is already pre-compiled, so this is only required if you run `npm run build:native`.
 </details>
 

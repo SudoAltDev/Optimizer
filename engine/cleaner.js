@@ -203,52 +203,75 @@ function cleanFolder(dirPath, pattern = null, maxDepth = 4, currentDepth = 0) {
 }
 
 export async function scanJunk() {
-  const results = [];
-  let totalBytes = 0;
-  let totalFiles = 0;
+  try {
+    const results = [];
+    let totalBytes = 0;
+    let totalFiles = 0;
 
-  for (const cat of JUNK_CATEGORIES) {
-    let size = 0;
-    let count = 0;
+    for (const cat of JUNK_CATEGORIES) {
+      let size = 0;
+      let count = 0;
 
-    if (cat.isSpecial === 'dns') {
-      size = 512 * 1024; // Virtual weight
-      count = 1;
-    } else if (cat.isSpecial === 'recycle_bin') {
       try {
-        const { stdout } = await execAsync('powershell -NoProfile -Command "(New-Object -ComObject Shell.Application).NameSpace(0xA).Items().Count"');
-        count = parseInt(stdout.trim(), 10) || 0;
-        size = count > 0 ? count * 1024 * 1024 : 0; // Estimated 1MB/item
-      } catch (e) {
-        count = 0;
+        if (cat.isSpecial === 'dns') {
+          size = 512 * 1024; // Virtual weight
+          count = 1;
+        } else if (cat.isSpecial === 'recycle_bin') {
+          try {
+            const { stdout } = await execAsync('powershell -NoProfile -Command "(New-Object -ComObject Shell.Application).NameSpace(0xA).Items().Count"', { timeout: 1500 });
+            count = parseInt(stdout.trim(), 10) || 0;
+            size = count > 0 ? count * 1024 * 1024 : 0; // Estimated 1MB/item
+          } catch (e) {
+            count = 0;
+          }
+        } else if (cat.paths) {
+          for (const p of cat.paths) {
+            try {
+              const stats = getFolderStats(p, cat.pattern);
+              size += stats.size;
+              count += stats.count;
+            } catch (pErr) {}
+          }
+        }
+      } catch (catErr) {
+        console.warn(`Error scanning category ${cat.id}:`, catErr.message);
       }
-    } else if (cat.paths) {
-      for (const p of cat.paths) {
-        const stats = getFolderStats(p, cat.pattern);
-        size += stats.size;
-        count += stats.count;
-      }
+
+      totalBytes += size;
+      totalFiles += count;
+
+      results.push({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description,
+        dangerLevel: cat.dangerLevel,
+        recommended: cat.recommended,
+        sizeBytes: size,
+        fileCount: count
+      });
     }
 
-    totalBytes += size;
-    totalFiles += count;
-
-    results.push({
-      id: cat.id,
-      name: cat.name,
-      description: cat.description,
-      dangerLevel: cat.dangerLevel,
-      recommended: cat.recommended,
-      sizeBytes: size,
-      fileCount: count
-    });
+    return {
+      categories: results,
+      totalBytes,
+      totalFiles
+    };
+  } catch (err) {
+    console.error('scanJunk top-level error:', err);
+    return {
+      categories: JUNK_CATEGORIES.map(c => ({
+        id: c.id,
+        name: c.name,
+        description: c.description,
+        dangerLevel: c.dangerLevel,
+        recommended: c.recommended,
+        sizeBytes: 0,
+        fileCount: 0
+      })),
+      totalBytes: 0,
+      totalFiles: 0
+    };
   }
-
-  return {
-    categories: results,
-    totalBytes,
-    totalFiles
-  };
 }
 
 export async function cleanJunk(categoryIds = null) {

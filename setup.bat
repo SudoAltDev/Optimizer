@@ -8,7 +8,7 @@ if %errorlevel% neq 0 (
     echo ========================================================
     echo   [AltOptimizer Setup] Requesting Administrator Privileges...
     echo ========================================================
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c call """"%~f0""""' -WorkingDirectory '%~dp0.' -Verb RunAs"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
     exit /b
 )
 
@@ -24,8 +24,7 @@ echo ===========================================================================
 echo.
 
 :: Ensure standard paths are included in session PATH
-if exist "C:\Program Files\nodejs" set "PATH=C:\Program Files\nodejs;%APPDATA%\npm;!PATH!"
-if exist "C:\Program Files\dotnet" set "PATH=C:\Program Files\dotnet;!PATH!"
+set "PATH=%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0\;C:\Program Files\nodejs\;C:\Program Files\dotnet\;%APPDATA%\npm;%PATH%"
 
 :: --------------------------------------------------------------------------
 :: [STEP 1] Check Node.js and npm
@@ -56,15 +55,15 @@ if "!HAS_NODE!"=="1" (
     ) else (
         echo.
         echo   [+] SUCCESS: Node.js LTS has been installed successfully!
-        if exist "C:\Program Files\nodejs" set "PATH=C:\Program Files\nodejs;%APPDATA%\npm;!PATH!"
+        if exist "C:\Program Files\nodejs" set "PATH=C:\Program Files\nodejs;%APPDATA%\npm;%PATH%"
     )
 )
 echo.
 
 :: --------------------------------------------------------------------------
-:: [STEP 2] Check Microsoft .NET 9 SDK
+:: [STEP 2] Check Microsoft .NET 10 SDK
 :: --------------------------------------------------------------------------
-echo [2/4] Checking Microsoft .NET 9 SDK...
+echo [2/4] Checking Microsoft .NET 10 SDK...
 set "HAS_DOTNET=0"
 where dotnet >nul 2>&1
 if %errorlevel% equ 0 set "HAS_DOTNET=1"
@@ -78,19 +77,19 @@ if "!HAS_DOTNET!"=="1" (
     echo   -- No installation needed. Skipping!
 ) else (
     echo   [STATUS] NOT AVAILABLE
-    echo   -- Microsoft .NET 9 SDK is not found on your system.
-    echo   -- Action: Installing Microsoft .NET 9 SDK via Windows Package Manager (winget)...
+    echo   -- Microsoft .NET 10 SDK is not found on your system.
+    echo   -- Action: Installing Microsoft .NET 10 SDK via Windows Package Manager (winget)...
     echo   -- Please wait while it downloads and installs...
     echo.
-    winget install --id Microsoft.DotNet.SDK.9 -e --accept-package-agreements --accept-source-agreements
+    winget install --id Microsoft.DotNet.SDK.10 -e --accept-package-agreements --accept-source-agreements
     if %errorlevel% neq 0 (
         echo.
         echo   [!] Warning: Winget installation was cancelled or encountered an error.
-        echo       You can install .NET 9 manually from: https://dotnet.microsoft.com/download/dotnet/9.0
+        echo       You can install .NET 10 manually from: https://dotnet.microsoft.com/download/dotnet
     ) else (
         echo.
-        echo   [+] SUCCESS: Microsoft .NET 9 SDK has been installed successfully!
-        if exist "C:\Program Files\dotnet" set "PATH=C:\Program Files\dotnet;!PATH!"
+        echo   [+] SUCCESS: Microsoft .NET 10 SDK has been installed successfully!
+        if exist "C:\Program Files\dotnet" set "PATH=C:\Program Files\dotnet;%PATH%"
     )
 )
 echo.
@@ -173,9 +172,11 @@ if /i "!LAUNCH_CHOICE!"=="N" (
 
 echo.
 echo [AltOptimizer] Starting standalone desktop app...
-if exist "node_modules\.bin\electron.cmd" (
-    start "" node_modules\.bin\electron.cmd .
+if exist "node_modules\electron\dist\electron.exe" (
+    start "" "%~dp0node_modules\electron\dist\electron.exe" "%~dp0." --elevated
+) else if exist "node_modules\.bin\electron.cmd" (
+    start "" node_modules\.bin\electron.cmd . --elevated
 ) else (
-    start "" npx electron .
+    start "" npx electron . --elevated
 )
 exit /b 0

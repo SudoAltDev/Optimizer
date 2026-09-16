@@ -4,13 +4,50 @@ const fs = require('fs');
 const http = require('http');
 const { spawn, execSync } = require('child_process');
 
+// Enforce single instance - prevent duplicate windows and server port conflicts
+const singleInstanceLock = app.requestSingleInstanceLock();
+if (!singleInstanceLock) {
+  app.quit();
+  process.exit(0);
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
+
+// Ensure standard Node and .NET directories are in process.env.PATH for elevated sessions
+if (process.platform === 'win32') {
+  const extraPaths = [
+    'C:\\Program Files\\nodejs',
+    'C:\\Program Files (x86)\\nodejs',
+    path.join(process.env.APPDATA || '', 'npm'),
+    path.join(process.env.LOCALAPPDATA || '', 'Programs', 'node'),
+    'C:\\Program Files\\dotnet'
+  ];
+  for (const p of extraPaths) {
+    if (fs.existsSync(p) && !(process.env.PATH || '').includes(p)) {
+      process.env.PATH = `${p};${process.env.PATH}`;
+    }
+  }
+}
+
 let mainWindow = null;
 let serverProcess = null;
 let activeServerPort = 4577;
 
 function isElevatedAdmin() {
   if (process.platform !== 'win32') return true;
+  // If launched via launch-desktop.bat or launch.bat with --elevated flag, we are already elevated
+  if (process.argv.includes('--elevated')) return true;
   try {
+    const netExe = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'net.exe');
+    if (fs.existsSync(netExe)) {
+      execSync(`"${netExe}" session`, { stdio: 'ignore' });
+      return true;
+    }
     execSync('net session', { stdio: 'ignore' });
     return true;
   } catch (e) {
@@ -22,14 +59,20 @@ function elevateElectronProcess() {
   if (process.platform !== 'win32') return false;
   const exe = process.execPath;
   const args = process.argv.slice(1);
+  if (!args.includes('--elevated')) args.push('--elevated');
   const argsString = args.map(a => `"${a}"`).join(' ');
   const workingDir = path.resolve(__dirname, '..');
+  const psPath = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+  const psExe = fs.existsSync(psPath) ? psPath : 'powershell';
   const psCmd = `Start-Process -FilePath "${exe}" -ArgumentList '${argsString}' -WorkingDirectory '${workingDir}' -Verb RunAs`;
 
   try {
-    const child = spawn('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', psCmd], {
+    const child = spawn(psExe, ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', psCmd], {
       detached: true,
       stdio: 'ignore'
+    });
+    child.on('error', (err) => {
+      console.error('Failed to spawn elevation process:', err);
     });
     child.unref();
     app.quit();
@@ -125,12 +168,14 @@ async function ensureServerRunning() {
     }
   }
 
-  // 2. Spawn node server/index.js (inherits elevated token)
   console.log('[AltOptimizer Desktop] Launching internal engine server...');
   const serverScript = path.join(__dirname, '..', 'server', 'index.js');
-  serverProcess = spawn('node', [serverScript], {
+  const standardNode = 'C:\\Program Files\\nodejs\\node.exe';
+  const nodeBinary = fs.existsSync(standardNode) ? standardNode : 'node';
+  serverProcess = spawn(nodeBinary, [serverScript], {
     cwd: path.join(__dirname, '..'),
-    stdio: 'inherit'
+    stdio: 'inherit',
+    env: { ...process.env }
   });
 
   serverProcess.on('error', (err) => {
